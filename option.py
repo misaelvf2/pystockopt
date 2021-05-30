@@ -11,4 +11,4 @@ class Option:
         self.expiration = expiration
 
     def __repr__(self):
-        return f"<type: {self.opt_type}, premium: {self.premium}, strike: {self.strike}, expiration: {self.expiration}"
+        return f"<type: {self.opt_type}, premium: {self.premium}, strike: {self.strike}, expiration: {self.expiration}>"
