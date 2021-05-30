@@ -1,12 +1,10 @@
-from security import  Security
-
-
-OPT_TYPES = ['call', 'put']
+from security import Security
+OPTION_TYPES = ['call', 'put']
 
 
 class Option(Security):
     def __init__(self, opt_type, premium, strike, expiration):
-        if opt_type not in OPT_TYPES:
+        if opt_type not in OPTION_TYPES:
             raise ValueError
         self.opt_type = opt_type
         self.premium = premium

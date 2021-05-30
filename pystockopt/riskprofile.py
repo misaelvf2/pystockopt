@@ -1,10 +1,13 @@
 import math
+from option import Option
+from stock import Stock
 
 
 class RiskProfile:
-    def __init__(self, position):
-        self.outlook = position.outlook
-        self.security = position.security
+    def __init__(self, security, quantity, outlook):
+        self.outlook = outlook
+        self.quantity = quantity
+        self.security = security
         self._set_profile()
 
     def _set_profile(self):
@@ -13,20 +16,30 @@ class RiskProfile:
             'max_profit': 0.0,
             'max_loss': 0.0,
         }
-        if self.security.opt_type == 'call':
+        if isinstance(self.security, Option):
+            if self.security.opt_type == 'call':
+                if self.outlook == 'long':
+                    self._profile['breakeven'] = self.security.strike + self.security.premium
+                    self._profile['max_profit'] = math.inf
+                    self._profile['max_loss'] = -self.security.premium * self.quantity
+                elif self.outlook == 'short':
+                    self._profile['breakeven'] = self.security.strike + self.security.premium
+                    self._profile['max_profit'] = self.security.premium * self.quantity
+                    self._profile['max_loss'] = -math.inf
+            elif self.security.opt_type == 'put':
+                if self.outlook == 'long':
+                    pass
+                elif self.outlook == 'short':
+                    pass
+        elif isinstance(self.security, Stock):
             if self.outlook == 'long':
-                self._profile['breakeven'] = self.security.strike + self.security.premium
+                self._profile['breakeven'] = self.security.purchase_price
                 self._profile['max_profit'] = math.inf
-                self._profile['max_loss'] = -self.security.premium
+                self._profile['max_loss'] = self.security.purchase_price * self.quantity
             elif self.outlook == 'short':
-                self._profile['breakeven'] = self.security.strike + self.security.premium
-                self._profile['max_profit'] = self.security.premium
+                self._profile['breakeven'] = self.security.purchase_price
+                self._profile['max_profit'] = self.security.purchase_price * self.quantity
                 self._profile['max_loss'] = -math.inf
-        elif self.security.opt_type == 'put':
-            if self.outlook == 'long':
-                pass
-            elif self.outlook == 'short':
-                pass
 
     @property
     def profile(self):
