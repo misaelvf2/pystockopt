@@ -27,3 +27,11 @@ class Position:
     @property
     def risk_profile(self):
         return self._risk_profile.profile
+
+    @property
+    def profit(self):
+        return self.security.current_price - self.cost_basis
+
+    def __repr__(self):
+        return f"<Ticker: {self.security.ticker}, Outlook: {self.outlook}, Quantity: {self.quantity}, " \
+               f"Cost Basis: {self.cost_basis}>"

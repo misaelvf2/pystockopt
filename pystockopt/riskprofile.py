@@ -21,10 +21,10 @@ class RiskProfile:
                 if self.outlook == 'long':
                     self._profile['breakeven'] = self.security.strike + self.security.premium
                     self._profile['max_profit'] = math.inf
-                    self._profile['max_loss'] = -self.security.premium * self.quantity
+                    self._profile['max_loss'] = -self.security.premium * self.quantity * 100
                 elif self.outlook == 'short':
                     self._profile['breakeven'] = self.security.strike + self.security.premium
-                    self._profile['max_profit'] = self.security.premium * self.quantity
+                    self._profile['max_profit'] = self.security.premium * self.quantity * 100
                     self._profile['max_loss'] = -math.inf
             elif self.security.opt_type == 'put':
                 if self.outlook == 'long':
