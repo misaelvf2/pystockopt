@@ -22,6 +22,7 @@ class Position:
 
     @property
     def cost_basis(self):
+        print(f"<<cost_basis: {self._cost_basis}")
         return self._cost_basis
 
     @property
