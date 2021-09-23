@@ -17,5 +17,8 @@ class TestOptions(unittest.TestCase):
         self.assertEqual(self.my_option.build_contract_symbol(),
                          "PLTR220121C00025000")
 
+    def test_price(self):
+        self.assertTrue(self.my_option.last_price)
+
     if __name__ == "__main__":
         unittest.main()

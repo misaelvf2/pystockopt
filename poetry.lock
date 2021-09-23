@@ -299,7 +299,7 @@ python-versions = "*"
 
 [[package]]
 name = "yfinance"
-version = "0.1.59"
+version = "0.1.63"
 description = "Yahoo! Finance market data downloader"
 category = "main"
 optional = false
@@ -532,5 +532,5 @@ wrapt = [
     {file = "wrapt-1.12.1.tar.gz", hash = "sha256:b62ffa81fb85f4332a4f609cab4ac40709470da05643a082ec1eb88e6d9b97d7"},
 ]
 yfinance = [
-    {file = "yfinance-0.1.59.tar.gz", hash = "sha256:fe4dc46807eceadc6604bf51ece7297b752dc5402a38a87385094fbfc7565fa0"},
+    {file = "yfinance-0.1.63.tar.gz", hash = "sha256:11364fe94f1cf7811c45fc620acb61c8c45fcb88de317c7718bbdbc9c1573a4c"},
 ]
