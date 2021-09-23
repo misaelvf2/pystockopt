@@ -1,4 +1,4 @@
-from riskprofile import RiskProfile
+from pystockopt.riskprofile import RiskProfile
 
 OUTLOOKS = ["long", "short"]
 
@@ -18,7 +18,8 @@ class Position:
         self._cost_basis = self.security.purchase_price * self.quantity
 
     def _set_risk_profile(self):
-        self._risk_profile = RiskProfile(self.security, self.quantity, self.outlook)
+        self._risk_profile = RiskProfile(
+            self.security, self.quantity, self.outlook)
 
     @property
     def cost_basis(self):
@@ -34,5 +35,6 @@ class Position:
         return self.security.current_price - self.cost_basis
 
     def __repr__(self):
-        return f"<Ticker: {self.security.ticker}, Outlook: {self.outlook}, Quantity: {self.quantity}, " \
-               f"Cost Basis: {self.cost_basis}>"
+        return f"<Ticker: {self.security.ticker}, Outlook: {self.outlook}, \
+                Quantity: {self.quantity}, \
+                Cost Basis: {self.cost_basis}>"

@@ -1,5 +1,5 @@
 import yfinance as yf
-from security import  Security
+from pystockopt.security import Security
 
 
 class Stock(Security):

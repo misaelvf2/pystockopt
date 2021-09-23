@@ -1,11 +1,13 @@
-from security import Security
+from pystockopt.security import Security
 
 import yfinance as yf
+
 OPTION_TYPES = ['call', 'put']
 
 
 class Option(Security):
-    def __init__(self, ticker, opt_type, premium, strike, expiration, _session):
+    def __init__(self, ticker=None, opt_type=None, premium=None,
+                 strike=None, expiration=None, _session=None):
         self.ticker = ticker
         if opt_type not in OPTION_TYPES:
             raise ValueError
@@ -21,7 +23,7 @@ class Option(Security):
         contract_symbol = self.ticker + self.expiration.strftime("%y%m%d")
         contract_symbol += 'C' if self.opt_type == 'call' else 'P'
 
-        strike_component = str(int(self.premium * 1000))
+        strike_component = str(int(self.strike * 1000))
         strike_component = '0' * (8 - len(strike_component)) + strike_component
         contract_symbol += strike_component
         return contract_symbol
@@ -31,4 +33,6 @@ class Option(Security):
         pass
 
     def __repr__(self):
-        return f"<ticker: {self.ticker}, type: {self.opt_type}, premium: {self.premium}, strike: {self.strike}, expiration: {self.expiration}>"
+        return f"<ticker: {self.ticker}, type: {self.opt_type}, \
+            premium: {self.premium}, strike: {self.strike}, \
+            expiration: {self.expiration}>"

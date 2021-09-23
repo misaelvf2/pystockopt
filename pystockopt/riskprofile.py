@@ -1,6 +1,6 @@
 import math
-from option import Option
-from stock import Stock
+from pystockopt.option import Option
+from pystockopt.stock import Stock
 
 
 class RiskProfile:
@@ -19,12 +19,16 @@ class RiskProfile:
         if isinstance(self.security, Option):
             if self.security.opt_type == 'call':
                 if self.outlook == 'long':
-                    self._profile['breakeven'] = self.security.strike + self.security.premium
+                    self._profile['breakeven'] = self.security.strike + \
+                        self.security.premium
                     self._profile['max_profit'] = math.inf
-                    self._profile['max_loss'] = -self.security.premium * self.quantity * 100
+                    self._profile['max_loss'] = - \
+                        self.security.premium * self.quantity * 100
                 elif self.outlook == 'short':
-                    self._profile['breakeven'] = self.security.strike + self.security.premium
-                    self._profile['max_profit'] = self.security.premium * self.quantity * 100
+                    self._profile['breakeven'] = self.security.strike + \
+                        self.security.premium
+                    self._profile['max_profit'] = self.security.premium * \
+                        self.quantity * 100
                     self._profile['max_loss'] = -math.inf
             elif self.security.opt_type == 'put':
                 if self.outlook == 'long':
@@ -35,10 +39,12 @@ class RiskProfile:
             if self.outlook == 'long':
                 self._profile['breakeven'] = self.security.purchase_price
                 self._profile['max_profit'] = math.inf
-                self._profile['max_loss'] = self.security.purchase_price * self.quantity
+                self._profile['max_loss'] = self.security.purchase_price * \
+                    self.quantity
             elif self.outlook == 'short':
                 self._profile['breakeven'] = self.security.purchase_price
-                self._profile['max_profit'] = self.security.purchase_price * self.quantity
+                self._profile['max_profit'] = self.security.purchase_price * \
+                    self.quantity
                 self._profile['max_loss'] = -math.inf
 
     @property
@@ -48,9 +54,11 @@ class RiskProfile:
     def profit(self, price):
         if self.security.opt_type == 'call':
             if self.outlook == 'long':
-                return max(price - self._profile['breakeven'], self._profile['max_loss'])
+                return max(price - self._profile['breakeven'],
+                           self._profile['max_loss'])
             elif self.outlook == 'short':
-                return min(self._profile['breakeven'] - price, self._profile['max_profit'])
+                return min(self._profile['breakeven'] - price,
+                           self._profile['max_profit'])
         elif self.security.opt_type == 'put':
             if self.outlook == 'long':
                 pass
