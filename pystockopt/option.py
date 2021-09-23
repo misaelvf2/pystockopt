@@ -47,9 +47,10 @@ class Option(Security):
     def last_price(self):
         options_chain = self._get_options_chain_from_yf(
             date=str(self.expiration))
-        call_options = options_chain.calls
-        last_price = call_options.loc[call_options['contractSymbol']
-                                      == self.symbol, 'lastPrice'].values[0]
+
+        options = options_chain.calls if self.opt_type == 'call' else options_chain.puts
+        last_price = options.loc[options['contractSymbol']
+                                 == self.symbol, 'lastPrice'].values[0]
         return last_price
 
     def __repr__(self):
