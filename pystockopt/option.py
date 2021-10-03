@@ -11,15 +11,17 @@ OPTION_TYPES = ['call', 'put']
 
 
 class Option(Security):
-    def __init__(self, ticker=None, opt_type=None, premium=None,
-                 strike=None, expiration=None, _session=None):
+
+    def __init__(self, ticker=None, opt_type=None, premium=None, strike=None,
+                 expiration=None, contract_size=100, _session=None):
         self.ticker = ticker
         if opt_type not in OPTION_TYPES:
             raise ValueError
         self._stock = get_ticker_from_yf(ticker, _session)
         self.opt_type = opt_type
         self.premium = premium
-        self.purchase_price = premium * 100
+        self.contract_size = contract_size
+        self.purchase_price = premium * contract_size
         self.strike = strike
         self.expiration = expiration
         self._symbol = self.build_contract_symbol()
@@ -75,6 +77,46 @@ class Option(Security):
             else Option.get_put_options_from_yf(
                 stock=self.stock, date=self.expiration))
         return options
+
+    def _init_from_contract_symbol(self):
+        self.ticker, self.expiration, self.opt_type = (
+            self._parse_contract_symbol())
+        self._underlying = yf.Ticker(self.ticker)
+        if self.opt_type == 'call':
+            _option_chain = self._underlying.option_chain()
+            _calls = _option_chain.calls
+            self._option = _calls[_calls['contractSymbol']
+                                  == self.symbol]
+        elif self.opt_type == 'put':
+            _option_chain = self._underlying.option_chain()
+            _puts = _option_chain.puts
+            self._option = _puts[_puts['contractSymbol']
+                                 == self.symbol]
+        if self.opt_type not in OPTION_TYPES:
+            raise ValueError
+        self.premium = self._option['lastPrice'][0]
+        self.strike = self._option['strike'][0]
+        self.purchase_price = self.premium * 100
+
+    def _parse_contract_symbol(self):
+        ticker_end_idx = self.ticker
+        ticker = self.symbol[:ticker_end_idx]
+        _, ticker, rest = self.symbol.partition(ticker)
+        expiration, opt_type_symbol, strike = rest.partition('C')
+        if not opt_type_symbol:
+            expiration, opt_type_symbol, strike = rest.partition('P')
+        if opt_type_symbol == 'C':
+            opt_type = 'call'
+        else:
+            opt_type = 'put'
+        expiration = self._parse_expiration(expiration)
+        return ticker, expiration, opt_type
+
+    @staticmethod
+    def _parse_expiration(expiration):
+        year, month, day = int(
+            '20' + expiration[:2]), int(expiration[2:4]), int(expiration[4:6])
+        return date(year, month, day)
 
     @property
     def last_price(self):
