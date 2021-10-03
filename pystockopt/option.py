@@ -26,8 +26,20 @@ class Option(Security):
 
     @staticmethod
     def get_options_chain_from_yf(stock, date):
-        options_chain = stock.option_chain(date=date)
+        options_chain = stock.option_chain(date=str(date))
         return options_chain
+
+    @staticmethod
+    def get_call_options_from_yf(stock, date):
+        options_chain = Option.get_options_chain_from_yf(
+            stock=stock, date=date)
+        return options_chain.calls
+
+    @staticmethod
+    def get_put_options_from_yf(stock, date):
+        options_chain = Option.get_options_chain_from_yf(
+            stock=stock, date=date)
+        return options_chain.puts
 
     def build_contract_symbol(self):
         contract_symbol = ''
@@ -48,12 +60,26 @@ class Option(Security):
         return self._stock
 
     @property
-    def last_price(self):
-        options_chain = Option.get_options_chain_from_yf(
-            self.stock, date=str(self.expiration))
+    def percent_change(self):
+        options = self._get_options_from_yf(type=self.opt_type)
 
-        options = options_chain.calls if self.opt_type == 'call' \
-            else options_chain.puts
+        percent_change = options.loc[options['contractSymbol']
+                                     == self.symbol, 'percentChange'].values[0]
+        return percent_change
+
+    def _get_options_from_yf(self, type):
+        options = (
+            Option.get_call_options_from_yf(
+                stock=self.stock, date=self.expiration)
+            if type == 'call'
+            else Option.get_put_options_from_yf(
+                stock=self.stock, date=self.expiration))
+        return options
+
+    @property
+    def last_price(self):
+        options = self._get_options_from_yf(type=self.opt_type)
+
         last_price = options.loc[options['contractSymbol']
                                  == self.symbol, 'lastPrice'].values[0]
         return last_price

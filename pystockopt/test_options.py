@@ -20,5 +20,8 @@ class TestOptions(unittest.TestCase):
     def test_price(self):
         self.assertTrue(self.my_option.last_price)
 
+    def test_percent_change(self):
+        self.assertTrue(self.my_option.percent_change)
+
     if __name__ == "__main__":
         unittest.main()

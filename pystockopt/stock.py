@@ -17,4 +17,6 @@ class Stock(Security):
         return self._stock
 
     def __repr__(self):
-        return f"<ticker: {self.ticker}, purchase price: {self.purchase_price}, current price: {self.current_price}>"
+        return f"<ticker: {self.ticker}, \
+             purchase price: {self.purchase_price}, \
+             current price: {self.current_price}>"
