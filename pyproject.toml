@@ -12,6 +12,7 @@ pylint = "^2.11.1"
 pep8 = "^1.7.1"
 pycodestyle = "^2.7.0"
 autopep8 = "^1.5.7"
+rich = "^10.11.0"
 
 [tool.poetry.dev-dependencies]
 

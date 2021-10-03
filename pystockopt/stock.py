@@ -12,5 +12,9 @@ class Stock(Security):
     def current_price(self):
         return self._stock.info['regularMarketPrice']
 
+    @property
+    def stock(self):
+        return self._stock
+
     def __repr__(self):
         return f"<ticker: {self.ticker}, purchase price: {self.purchase_price}, current price: {self.current_price}>"
