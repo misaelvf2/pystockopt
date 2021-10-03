@@ -88,12 +88,3 @@ class Option(Security):
         return f"<ticker: {self.ticker}, type: {self.opt_type}, \
             premium: {self.premium}, strike: {self.strike}, \
             expiration: {self.expiration}>"
-
-
-if __name__ == "__main__":
-    my_session = requests_cache.CachedSession('yfinance.cache')
-    my_option = Option(ticker="PLTR", opt_type="call", premium=3.59,
-                       strike=25.00, expiration=date(2022, 1, 21),
-                       _session=my_session)
-
-    print(my_option.last_price)

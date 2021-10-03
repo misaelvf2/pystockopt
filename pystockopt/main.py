@@ -5,6 +5,7 @@ from rich.console import Console
 from rich.table import Table
 from rich.live import Live
 from rich.layout import Layout
+from rich.panel import Panel
 
 import requests_cache
 import yfinance as yf
@@ -103,13 +104,13 @@ def make_layout():
         Layout(name="upper"),
         Layout(name="lower")
     )
-    layout["upper"].update(generate_table())
-    layout["lower"].update(generate_table_1())
+    layout["upper"].update(Panel(generate_table()))
+    layout["lower"].update(Panel(generate_table_1()))
     return layout
 
 
 def main():
-    with Live(make_layout(), refresh_per_second=10) as live:
+    with Live(make_layout(), refresh_per_second=1, screen=True) as live:
         while True:
             time.sleep(1)
             live.update(make_layout())
