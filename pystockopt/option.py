@@ -96,7 +96,7 @@ class Option(Security):
             raise ValueError
         self.premium = self._option['lastPrice'][0]
         self.strike = self._option['strike'][0]
-        self.purchase_price = self.premium * 100
+        self.purchase_price = self.premium * self.contract_size
 
     def _parse_contract_symbol(self):
         ticker_end_idx = self.ticker
