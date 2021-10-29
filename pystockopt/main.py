@@ -1,4 +1,4 @@
-from pystockopt import position
+# z from pystockopt import position
 import time
 from rich import print, inspect
 from rich.console import Console
@@ -10,10 +10,8 @@ from rich.panel import Panel
 import requests_cache
 import yfinance as yf
 from datetime import date, timedelta
-from pystockopt import option
 from pystockopt.option import Option
-
-ITERATION = 0
+from pystockopt.stock import Stock
 
 
 def test_y_finance():
@@ -28,11 +26,11 @@ def test_options():
     return my_option.build_contract_symbol()
 
 
-def generate_table() -> Table:
-    # my_session = requests_cache.CachedSession('yfinance.cache')
+def generate_options_table() -> Table:
+    my_session = requests_cache.CachedSession('yfinance.cache')
     my_option = Option(ticker="PLTR", opt_type="call", premium=3.59,
                        strike=25.00, expiration=date(2022, 1, 21),
-                       _session=None)
+                       _session=my_session)
 
     table = Table(show_header=True, header_style="bold cyan")
 
@@ -52,9 +50,9 @@ def generate_table() -> Table:
         my_option.symbol,
         my_option.ticker,
         str(last_price),
-        (f"[bold green]{percent_change}"
+        (f"[bold green]{percent_change:.2f}"
          if my_option.percent_change >= 0
-         else f"[bold red]{percent_change}"),
+         else f"[bold red]{percent_change:.2f}"),
         my_option.opt_type.capitalize(),
         str(my_option.premium),
         str(my_option.strike),
@@ -64,35 +62,28 @@ def generate_table() -> Table:
     return table
 
 
-def generate_table_1() -> Table:
-    # my_session = requests_cache.CachedSession('yfinance.cache')
-    my_option = Option(ticker="PLTR", opt_type="call", premium=3.59,
-                       strike=25.00, expiration=date(2022, 1, 21),
-                       _session=None)
+def generate_stocks_table() -> Table:
+    my_session = requests_cache.CachedSession('yfinance.cache')
+    my_stock = Stock(ticker="MSFT", price=300.00, _session=None)
 
     table = Table(show_header=True, header_style="bold cyan")
 
-    table.add_column("Contract")
+    table.add_column("Company")
     table.add_column("Ticker")
     table.add_column("Last Price")
     table.add_column("% Change")
-    table.add_column("Type")
-    table.add_column("Iteration")
 
-    last_price = my_option.last_price
-    percent_change = my_option.percent_change
-    global ITERATION
-    ITERATION += 1
+    company = my_stock.company
+    last_price = my_stock.last_price
+    percent_change = my_stock.percent_change
 
     table.add_row(
-        my_option.symbol,
-        my_option.ticker,
+        company,
+        my_stock.ticker,
         str(last_price),
-        (f"[bold green]{percent_change}"
-         if my_option.percent_change >= 0
-         else f"[bold red]{percent_change}"),
-        my_option.opt_type.capitalize(),
-        str(ITERATION)
+        (f"[bold green]{percent_change:.2f}"
+         if my_stock.percent_change >= 0
+         else f"[bold red]{percent_change:.2f}")
     )
 
     return table
@@ -104,8 +95,8 @@ def make_layout():
         Layout(name="upper"),
         Layout(name="lower")
     )
-    layout["upper"].update(Panel(generate_table()))
-    layout["lower"].update(Panel(generate_table_1()))
+    layout["upper"].update(Panel(generate_options_table()))
+    layout["lower"].update(Panel(generate_stocks_table()))
     return layout
 
 
@@ -118,12 +109,15 @@ def main():
 
 def test():
     my_session = requests_cache.CachedSession('yfinance.cache')
-    my_option = Option(ticker="PLTR", opt_type="call", premium=3.59,
-                       strike=25.00, expiration=date(2022, 1, 21),
-                       _session=my_session)
+    # my_option = Option(ticker="PLTR", opt_type="call", premium=3.59,
+    #                    strike=25.00, expiration=date(2022, 1, 21),
+    #                    _session=my_session)
 
-    inspect(Option.get_options_chain_from_yf(
-        my_option.stock, my_option.expiration), methods=True)
+    # inspect(Option.get_options_chain_from_yf(
+    #     my_option.stock, my_option.expiration), methods=True)
+    my_stock = Stock(ticker="MSFT", price=300.00, _session=None)
+    print(my_stock.company)
+    # inspect(my_stock._stock, methods=True)
 
 
 if __name__ == "__main__":
