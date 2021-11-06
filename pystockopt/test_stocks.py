@@ -26,9 +26,15 @@ class TestStocks(unittest.TestCase):
         self.assertAlmostEqual(result, 284.00, places=2)
 
     def test_price_change(self):
-        result = self.my_stock.price_change(
-            start=date(2021, 1, 4), end=date(2021, 9, 29))
-        self.assertAlmostEqual(result, 67.24, places=2)
+        params = [(date(2021, 1, 5), date(2021, 2, 6), None, 24.14),
+                  (date(2021, 1, 5), None, "1mo", 24.14)]
+
+        for param in params:
+            start, end, period, expected = param
+            with self.subTest(msg=f"start={start}, end={end}, period={period}"):
+                result = self.my_stock.price_change(
+                    start=start, end=end, period=period)
+                self.assertAlmostEqual(result, expected, places=2)
 
     def test_price_range(self):
         result = self.my_stock.price_range(
