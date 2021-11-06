@@ -13,6 +13,7 @@ pep8 = "^1.7.1"
 pycodestyle = "^2.7.0"
 autopep8 = "^1.5.7"
 rich = "^10.11.0"
+python-dateutil = "^2.8.2"
 
 [tool.poetry.dev-dependencies]
 

@@ -3,8 +3,22 @@ Contains classes for representing and manipulating stocks
 """
 
 import datetime
+from dateutil.relativedelta import relativedelta
 from pystockopt.utils import get_ticker_from_yf
 from pystockopt.security import Security
+
+# 1d,5d,1mo,3mo,6mo,1y,2y,5y,10y
+PERIOD_TO_RELATIVEDELTA = {
+    "1d": relativedelta(days=1),
+    "5d": relativedelta(days=5),
+    "1mo": relativedelta(months=1),
+    "3mo": relativedelta(months=3),
+    "6mo": relativedelta(months=6),
+    "1y": relativedelta(years=1),
+    "2y": relativedelta(years=2),
+    "5y": relativedelta(years=5),
+    "10y": relativedelta(years=10),
+}
 
 
 class Stock(Security):
@@ -40,10 +54,18 @@ class Stock(Security):
         """Returns the stock's company name."""
         return self._stock.info['shortName']
 
-    def price_change(self, start, end):
-        """Returns change in price from given start and end dates."""
-        start_price = self.price_on(start)
-        end_price = self.price_on(end.replace(day=end.day - 1))
+    def price_change(self, start, end=None, period="1mo"):
+        """Returns change in price from given dates."""
+        price_history = self.stock.history(start=start, end=end)
+        start_price = price_history.loc[str(start)]["Close"]
+        if end:
+            end = end - relativedelta(days=1)
+        else:
+            if period == "ytd":
+                end = datetime.date.today() - relativedelta(days=1)
+            else:
+                end = start + PERIOD_TO_RELATIVEDELTA[period]
+        end_price = price_history.loc[str(end)]["Close"]
         return end_price - start_price
 
     def price_on(self, date):
@@ -73,7 +95,7 @@ class Stock(Security):
         min_price = price_history["Close"].min()
         return 100 * (max_price - min_price) / ((max_price + min_price) / 2)
 
-    def save_price_history(self, start, end):
+    def save_price_history(self, start, end=None, period="1mo"):
         """Saves price history of stock for given time period."""
         price_history = self.stock.history(start=start, end=end)
         price_history.to_csv(f"{self.ticker}_price_history_{start}.csv")
@@ -87,20 +109,9 @@ class Stock(Security):
 if __name__ == "__main__":
     my_stock = Stock(ticker="MSFT")
     price_change = my_stock.price_change(
-        start=datetime.date(2021, 10, 5), end=datetime.date(2021, 11, 5)
-    )
-
-    price_range = my_stock.price_range(
-        start=datetime.date(2021, 10, 5), end=datetime.date(2021, 11, 5)
-    )
-
-    price_range_values = my_stock.price_range_values(
-        start=datetime.date(2021, 10, 5), end=datetime.date(2021, 11, 5)
-    )
+        start=datetime.date(2021, 1, 5), period="1mo")
 
     print(f"Price change: {price_change}")
-    print(f"Price range: {price_range}")
-    print(f"Price range values: {price_range_values}")
 
-    my_stock.save_price_history(start=datetime.date(
-        2021, 10, 5), end=datetime.date(2021, 11, 5))
+    # my_stock.save_price_history(start=datetime.date(
+    #     2021, 1, 5), end=datetime.date(2021, 2, 6))
