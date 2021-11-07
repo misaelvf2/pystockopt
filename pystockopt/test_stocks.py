@@ -3,6 +3,7 @@ from pystockopt.stock import Stock
 import unittest
 import requests_cache
 from datetime import date, timedelta
+from numpy.testing import assert_almost_equal
 
 
 class TestStocks(unittest.TestCase):
@@ -37,15 +38,32 @@ class TestStocks(unittest.TestCase):
                 self.assertAlmostEqual(result, expected, places=2)
 
     def test_price_range(self):
-        result = self.my_stock.price_range(
-            start=date(2021, 10, 5), end=date(2021, 11, 5))
-        self.assertAlmostEqual(result, 47.68, places=2)
+        params = [(date(2021, 10, 5), date(2021, 11, 6), None, 47.68),
+                  (date(2021, 10, 5), None, "1mo", 47.68)]
+
+        for param in params:
+            start, end, period, expected = param
+            with self.subTest(msf=f"start={start}, end={end}, period={period}"):
+                result = self.my_stock.price_range(
+                    start=start, end=end, period=period)
+                self.assertAlmostEqual(result, expected, places=2)
 
     def test_price_range_percent(self):
         result = self.my_stock.price_range_percent(
             start=date(2021, 10, 5), end=date(2021, 11, 5)
         )
         self.assertAlmostEqual(result, 15.25, places=2)
+
+    def test_price_range_values(self):
+        params = [(date(2021, 10, 5), date(2021, 11, 6), None, (288.76, 336.44)),
+                  (date(2021, 10, 5), None, "1mo", (288.76, 336.44))]
+
+        for param in params:
+            start, end, period, expected = param
+            with self.subTest(msf=f"start={start}, end={end}, period={period}"):
+                result = self.my_stock.price_range_values(
+                    start=start, end=end, period=period)
+                assert_almost_equal(result, expected, decimal=2)
 
     if __name__ == "__main__":
         unittest.main()
